@@ -1,10 +1,9 @@
 {
-  "id": "tag-navigator",
-  "name": "Tag Navigator",
+  "id": "tag-navigator-next",
+  "name": "Tag Navigator Next",
   "description": "Cross-reference navigation through your tags",
-  "version": "0.5.0",
-  "author": "Alexander Obenauer",
-  "authorUrl": "https://alexanderobenauer.com",
+  "version": "1.0.0",
+  "author": "Vinicius Portela",
   "isDesktopOnly": false,
   "minAppVersion": "0.12.12"
 }

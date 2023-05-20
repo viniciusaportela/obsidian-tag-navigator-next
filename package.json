@@ -1,8 +1,8 @@
 {
-  "name": "obsidian-tag-navigator",
-  "version": "0.1.0",
+  "name": "obsidian-tag-navigator-next",
+  "version": "1.0.0",
   "description": "Tag Navigator plugin for Obsidian: Cross-reference navigation through your tags",
-  "author": "alexobenauer",
+  "author": "viniciusaportela",
   "main": "main.js",
   "license": "MIT",
   "scripts": {

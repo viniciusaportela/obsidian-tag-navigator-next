@@ -1,19 +1,23 @@
-import { ItemView, WorkspaceLeaf } from "obsidian"
-import type { SettingsStore, TagMenuStore } from "./ui/stores"
-import { VIEW_TYPE } from "src/constants"
-import TagMenu from "./ui/TagMenu.svelte"
-import { get } from "svelte/store"
+import { ItemView, WorkspaceLeaf } from "obsidian";
+import type { SettingsStore, TagMenuStore } from "./ui/stores";
+import { VIEW_TYPE } from "src/constants";
+import TagMenu from "./ui/TagMenu.svelte";
+import { get } from "svelte/store";
 
 export default class CRNView extends ItemView {
-  private tagMenu: TagMenu
-  private settingsStore: SettingsStore
-  private tagMenuStore: TagMenuStore
-  private unsubscribe: () => void
+  private tagMenu: TagMenu;
+  private settingsStore: SettingsStore;
+  private tagMenuStore: TagMenuStore;
+  private unsubscribe: () => void;
 
-  constructor(leaf: WorkspaceLeaf, settingsStore: SettingsStore, tagMenuStore: TagMenuStore) {
+  constructor(
+    leaf: WorkspaceLeaf,
+    settingsStore: SettingsStore,
+    tagMenuStore: TagMenuStore
+  ) {
     super(leaf);
-    this.settingsStore = settingsStore
-    this.tagMenuStore = tagMenuStore
+    this.settingsStore = settingsStore;
+    this.tagMenuStore = tagMenuStore;
   }
 
   getViewType(): string {
@@ -25,21 +29,21 @@ export default class CRNView extends ItemView {
   }
 
   getIcon(): string {
-    return "go-to-file";
+    return "tag";
   }
 
   getEphemeralState(): any {
-    const state = get(this.tagMenuStore)
-    
+    const state = get(this.tagMenuStore);
+
     return {
       selectedTags: state.selectedTags,
-      expandedGroups: state.expandedGroups
-    }
+      expandedGroups: state.expandedGroups,
+    };
   }
 
   setEphemeralState(state: any): void {
     if (state) {
-      this.tagMenuStore.loadState(state.selectedTags, state.expandedGroups)
+      this.tagMenuStore.loadState(state.selectedTags, state.expandedGroups);
     }
   }
 
@@ -49,7 +53,7 @@ export default class CRNView extends ItemView {
     }
 
     if (this.unsubscribe) {
-      this.unsubscribe()
+      this.unsubscribe();
     }
 
     return Promise.resolve();
@@ -65,13 +69,14 @@ export default class CRNView extends ItemView {
     });
 
     if (this.unsubscribe) {
-      this.unsubscribe()
+      this.unsubscribe();
     }
 
-    this.unsubscribe = this.tagMenuStore.subscribe(_ => {
-      this.app.workspace.requestSaveHistory()
-    })
+    this.unsubscribe = this.tagMenuStore.subscribe((_) => {
+      // TODO revisit
+      // this.app.workspace.requestSaveHistory();
+    });
 
-    return Promise.resolve()
-  }  
+    return Promise.resolve();
+  }
 }

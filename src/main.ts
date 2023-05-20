@@ -1,44 +1,63 @@
-import { App, Plugin, WorkspaceLeaf } from "obsidian"
+import { App, Plugin, WorkspaceLeaf } from "obsidian";
 
-import { VIEW_TYPE } from "./constants"
-import CRNView from "./view"
-import { createSettingsStore, createTagMenuStore, SettingsStore, TagMenuStore } from "./ui/stores"
+import { VIEW_TYPE } from "./constants";
+import CRNView from "./view";
+import {
+  createSettingsStore,
+  createTagMenuStore,
+  SettingsStore,
+  TagMenuStore,
+} from "./ui/stores";
 
 declare global {
   interface Window {
-    app: App
+    app: App;
   }
 }
 
 export default class CrossNavPlugin extends Plugin {
-  public settingsStore: SettingsStore
-  public tagMenuStore: TagMenuStore
-  private view: CRNView
-
-  onunload(): void {
-    this.app.workspace
-      .getLeavesOfType(VIEW_TYPE)
-      .forEach((leaf) => leaf.detach());
-    
-    this.tagMenuStore.destroy()
-  }
+  public settingsStore: SettingsStore;
+  public tagMenuStore: TagMenuStore;
 
   async onload(): Promise<void> {
-    this.settingsStore = await createSettingsStore(this)
-    this.tagMenuStore = createTagMenuStore(this.settingsStore)
+    this.settingsStore = await createSettingsStore(this);
+    this.tagMenuStore = createTagMenuStore(this.settingsStore);
 
     this.registerView(
       VIEW_TYPE,
-      (leaf: WorkspaceLeaf) => (this.view = new CRNView(leaf, this.settingsStore, this.tagMenuStore))
-    )
+      (leaf: WorkspaceLeaf) =>
+        new CRNView(leaf, this.settingsStore, this.tagMenuStore)
+    );
+
+    this.addRibbonIcon("tag", "Tag Navigator", () => {
+      this.openTagNavigatorView();
+    });
 
     this.addCommand({
       id: "show-refnav-view",
       name: "Open Tag Navigator",
       callback: () => {
-        const leaf = this.app.workspace.activeLeaf
-        leaf.open(new CRNView(leaf, this.settingsStore, this.tagMenuStore))
+        this.openTagNavigatorView();
       },
-    })
+    });
+  }
+
+  onunload(): void {
+    this.app.workspace.detachLeavesOfType(VIEW_TYPE);
+
+    this.tagMenuStore.destroy();
+  }
+
+  async openTagNavigatorView(): Promise<void> {
+    this.app.workspace.detachLeavesOfType(VIEW_TYPE);
+
+    await this.app.workspace.getLeaf(true).setViewState({
+      type: VIEW_TYPE,
+      active: true,
+    });
+
+    this.app.workspace.revealLeaf(
+      this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
+    );
   }
 }
